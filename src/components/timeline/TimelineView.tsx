@@ -5,7 +5,14 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday
 import { AvatarGroup } from '../ui/Avatar';
 
 export const TimelineView: React.FC = () => {
-  const tasks = useStore(state => state.getFilteredSortedTasks());
+  const getFilteredSortedTasks = useStore(state => state.getFilteredSortedTasks);
+  const rawTasks = useStore(state => state.tasks);
+  const filters = useStore(state => state.filters);
+  const sort = useStore(state => state.sort);
+  
+  const tasks = React.useMemo(() => getFilteredSortedTasks(), [
+    getFilteredSortedTasks, rawTasks, filters, sort
+  ]);
   
   // Timeline: Current Month
   const days = useMemo(() => {

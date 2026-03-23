@@ -52,9 +52,15 @@ const StatusDropdown: React.FC<{
 
 
 export const ListView: React.FC = () => {
-  const tasks = useStore(state => state.getFilteredSortedTasks());
-  const updateTask = useStore(state => state.updateTask);
+  const getFilteredSortedTasks = useStore(state => state.getFilteredSortedTasks);
+  const rawTasks = useStore(state => state.tasks);
+  const filters = useStore(state => state.filters);
   const sort = useStore(state => state.sort);
+  
+  const tasks = React.useMemo(() => getFilteredSortedTasks(), [
+    getFilteredSortedTasks, rawTasks, filters, sort
+  ]);
+  const updateTask = useStore(state => state.updateTask);
   const setSort = useStore(state => state.setSort);
   
   const containerRef = useRef<HTMLDivElement>(null);

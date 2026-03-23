@@ -6,7 +6,14 @@ import { createPortal } from 'react-dom';
 import { KanbanCard } from './KanbanCard';
 
 export const KanbanBoard: React.FC = () => {
-  const tasks = useStore(state => state.getFilteredSortedTasks());
+  const getFilteredSortedTasks = useStore(state => state.getFilteredSortedTasks);
+  const rawTasks = useStore(state => state.tasks);
+  const filters = useStore(state => state.filters);
+  const sort = useStore(state => state.sort);
+  
+  const tasks = React.useMemo(() => getFilteredSortedTasks(), [
+    getFilteredSortedTasks, rawTasks, filters, sort
+  ]);
   const updateTask = useStore(state => state.updateTask);
   
   const columns: TaskStatus[] = ['To Do', 'In Progress', 'In Review', 'Done'];

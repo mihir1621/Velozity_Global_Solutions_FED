@@ -29,6 +29,7 @@ export interface FilterState {
     start: string | null;
     end: string | null;
   };
+  search: string;
 }
 
 export type SortColumn = 'title' | 'priority' | 'dueDate';

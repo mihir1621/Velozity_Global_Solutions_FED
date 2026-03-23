@@ -33,7 +33,7 @@ const BaseApp: React.FC = () => {
       <FilterBar />
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-hidden pointer-events-auto h-full p-4 md:p-6 lg:p-8 animate-in fade-in zoom-in-95 duration-300 relative">
+      <main className="flex-1 flex flex-col overflow-hidden pointer-events-auto p-4 md:p-6 lg:p-8 animate-scale-in relative">
         {viewMode === 'Kanban' && <KanbanBoard />}
         {viewMode === 'List' && <ListView />}
         {viewMode === 'Timeline' && <TimelineView />}

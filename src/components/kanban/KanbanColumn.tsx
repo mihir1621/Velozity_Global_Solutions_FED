@@ -7,8 +7,10 @@ export const KanbanColumn: React.FC<{
   tasks: Task[];
   isDropTarget: boolean;
   draggedTaskId?: string;
+  placeholderHeight?: number;
+  staggerIdx?: number;
   onDragStart: (t: Task, e: React.PointerEvent<HTMLDivElement>) => void;
-}> = ({ status, tasks, isDropTarget, draggedTaskId, onDragStart }) => {
+}> = ({ status, tasks, isDropTarget, draggedTaskId, placeholderHeight, staggerIdx = 1, onDragStart }) => {
   const statusColors: Record<TaskStatus, string> = {
     'To Do': 'border-t-gray-400',
     'In Progress': 'border-t-yellow-400',
@@ -21,8 +23,9 @@ export const KanbanColumn: React.FC<{
       data-droppable-col={status}
       className={`
         flex flex-col bg-slate-50 rounded-xl overflow-hidden w-80 flex-shrink-0 transition-colors
-        border-t-4 shadow-sm ${statusColors[status]} 
+        border-t-4 shadow-sm h-full max-h-full ${statusColors[status]} 
         ${isDropTarget ? 'bg-indigo-50/70 shadow-inner' : 'border border-gray-200'}
+        animate-slide-up stagger-${staggerIdx}
       `}
     >
       <div className="p-4 flex items-center justify-between border-b border-gray-200/50 bg-white/50">
@@ -35,7 +38,7 @@ export const KanbanColumn: React.FC<{
       <div className="flex-1 p-3 overflow-y-auto min-h-[300px]">
         {tasks.map((task) => {
           if (draggedTaskId === task.id) {
-            return <KanbanCard key={task.id} task={task} isPlaceholder />;
+            return <KanbanCard key={task.id} task={task} isPlaceholder placeholderHeight={placeholderHeight} />;
           }
           return (
             <div key={task.id} className="relative">

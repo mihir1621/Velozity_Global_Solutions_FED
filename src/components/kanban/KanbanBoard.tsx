@@ -23,6 +23,8 @@ export const KanbanBoard: React.FC = () => {
   const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [activeDropCol, setActiveDropCol] = useState<TaskStatus | null>(null);
+  const [draggedRect, setDraggedRect] = useState<DOMRect | null>(null);
+  const [isSnappingBack, setIsSnappingBack] = useState(false);
   
   const originalColRef = useRef<TaskStatus | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
@@ -31,6 +33,8 @@ export const KanbanBoard: React.FC = () => {
   const stopDrag = useCallback(() => {
     setDraggedTask(null);
     setActiveDropCol(null);
+    setDraggedRect(null);
+    setIsSnappingBack(false);
     originalColRef.current = null;
     document.body.style.userSelect = 'auto';
   }, []);
@@ -69,12 +73,15 @@ export const KanbanBoard: React.FC = () => {
   const handlePointerUp = useCallback(() => {
     if (!draggedTask) return;
     
-    // Dropped outside constraints or on same column -> snap back (no update)
     if (activeDropCol && activeDropCol !== draggedTask.status) {
       updateTask(draggedTask.id, { status: activeDropCol });
+      stopDrag();
+    } else {
+      setIsSnappingBack(true);
+      setTimeout(() => {
+        stopDrag();
+      }, 300); // matches duration-300
     }
-    
-    stopDrag();
   }, [draggedTask, activeDropCol, updateTask, stopDrag]);
 
   useEffect(() => {
@@ -92,11 +99,11 @@ export const KanbanBoard: React.FC = () => {
 
 
   const onDragStart = (task: Task, e: React.PointerEvent<HTMLDivElement>) => {
-    e.preventDefault(); // Prevent touch scroll
     const rect = e.currentTarget.getBoundingClientRect();
     const offsetX = e.clientX - rect.left;
     const offsetY = e.clientY - rect.top;
     
+    setDraggedRect(rect);
     setDragOffset({ x: offsetX, y: offsetY });
     setPointerPos({ x: e.clientX, y: e.clientY });
     setDraggedTask(task);
@@ -106,8 +113,8 @@ export const KanbanBoard: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex overflow-x-auto p-6 gap-6" ref={boardRef} style={{ touchAction: 'none' }}>
-      {columns.map(status => (
+    <div className="flex-1 flex overflow-x-auto h-full overflow-y-hidden pb-6 gap-6" ref={boardRef}>
+      {columns.map((status, index) => (
         <KanbanColumn
           key={status}
           status={status}
@@ -115,17 +122,23 @@ export const KanbanBoard: React.FC = () => {
           isDropTarget={activeDropCol === status}
           onDragStart={onDragStart}
           draggedTaskId={draggedTask?.id}
+          placeholderHeight={draggedTask?.id ? draggedRect?.height : undefined}
+          staggerIdx={index + 1}
         />
       ))}
 
       {/* Render dragged task via portal to body for absolute positioning above all */}
       {draggedTask && createPortal(
         <div
-          className="fixed pointer-events-none z-50 transform rotate-3 scale-105 shadow-xl transition-transform"
+          className={`fixed pointer-events-none z-50 shadow-xl ${
+            isSnappingBack 
+              ? 'transition-all duration-300 ease-out opacity-100 scale-100 rotate-0' 
+              : 'transform rotate-3 scale-105 transition-transform'
+          }`}
           style={{
-            left: pointerPos.x - dragOffset.x,
-            top: pointerPos.y - dragOffset.y,
-            width: '280px', // Set to match column task card width roughly
+            left: isSnappingBack && draggedRect ? draggedRect.left : pointerPos.x - dragOffset.x,
+            top: isSnappingBack && draggedRect ? draggedRect.top : pointerPos.y - dragOffset.y,
+            width: draggedRect ? draggedRect.width : 280,
           }}
         >
           <KanbanCard task={draggedTask} isDraggedClone={true} />

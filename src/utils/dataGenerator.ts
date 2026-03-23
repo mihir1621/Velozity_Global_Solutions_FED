@@ -25,9 +25,11 @@ export const generateAssignees = (count: number): Assignee[] => {
   });
 };
 
-export const MOCK_USERS = generateAssignees(15); 
-// 4 simulated online users for the live collaboration
-export const SIMULATED_ONLINE_USERS = MOCK_USERS.slice(0, 4);
+export const MOCK_USERS = generateAssignees(6); 
+// Generate 1 to 5 dynamic online users each time the application loads
+export const SIMULATED_ONLINE_USERS = [...MOCK_USERS]
+  .sort(() => Math.random() - 0.5)
+  .slice(0, Math.floor(Math.random() * 5) + 1);
 
 export const generateTasks = (count: number): Task[] => {
   const result: Task[] = [];

@@ -10,6 +10,7 @@ interface AppState {
   
   // Actions
   initializeTasks: () => void;
+  addTask: (task: Task) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   setFilters: (filters: Partial<FilterState>) => void;
   clearFilters: () => void;
@@ -28,6 +29,7 @@ const defaultFilters: FilterState = {
   priority: [],
   assignees: [],
   dueDateRange: { start: null, end: null },
+  search: '',
 };
 
 export const useStore = create<AppState>((set, get) => ({
@@ -38,6 +40,12 @@ export const useStore = create<AppState>((set, get) => ({
   
   initializeTasks: () => {
     set({ tasks: generateTasks(505) });
+  },
+  
+  addTask: (task: Task) => {
+    set(state => ({
+      tasks: [task, ...state.tasks]
+    }));
   },
   
   updateTask: (id: string, updates: Partial<Task>) => {
@@ -100,6 +108,13 @@ export const useStore = create<AppState>((set, get) => ({
       if (filters.status.length > 0 && !filters.status.includes(t.status)) return false;
       if (filters.priority.length > 0 && !filters.priority.includes(t.priority)) return false;
       if (filters.assignees.length > 0 && !filters.assignees.includes(t.assignee.id)) return false;
+      if (filters.search) {
+        const query = filters.search.toLowerCase();
+        const matchesTitle = t.title.toLowerCase().includes(query);
+        const matchesAssignee = t.assignee.name.toLowerCase().includes(query);
+        
+        if (!matchesTitle && !matchesAssignee) return false;
+      }
       if (filters.dueDateRange.start && new Date(t.dueDate) < new Date(filters.dueDateRange.start)) return false;
       
       // We parse end date as the end of the day to make it inclusive

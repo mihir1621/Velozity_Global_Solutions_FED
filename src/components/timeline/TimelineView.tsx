@@ -53,11 +53,14 @@ export const TimelineView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
+    <div className="flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative animate-slide-up">
       
-      {/* Header Grid: Days */}
-      <div className="flex border-b border-gray-200 bg-gray-50 sticky top-0 z-20">
-        <div className="w-64 min-w-64 border-r border-gray-200 bg-gray-50 flex items-center px-4 font-semibold text-gray-700 sticky left-0 z-30 shadow-[2px_0_5px_rgba(0,0,0,0.05)] text-sm">
+      {/* Unified Scroll Container */}
+      <div className="flex-1 overflow-auto relative">
+      
+        {/* Header Grid: Days */}
+        <div className="flex border-b border-gray-200 bg-gray-50 sticky top-0 z-30 w-max min-w-full">
+          <div className="w-64 min-w-[256px] border-r border-gray-200 bg-gray-50 flex items-center px-4 font-semibold text-gray-700 sticky left-0 z-40 shadow-[2px_0_5px_rgba(0,0,0,0.05)] text-sm">
           Task
         </div>
         <div className="flex">
@@ -75,8 +78,8 @@ export const TimelineView: React.FC = () => {
         </div>
       </div>
 
-      {/* Body container with horizontal scroll handling */}
-      <div className="flex-1 overflow-auto relative">
+      {/* Body Tasks Container */}
+      <div className="relative w-max min-w-full">
         {/* Today Marker Line */}
         {days.findIndex(d => isToday(d)) !== -1 && (
           <div 
@@ -87,26 +90,26 @@ export const TimelineView: React.FC = () => {
           />
         )}
 
-        {tasks.map((task) => {
+        {tasks.map((task, idx) => {
           const layout = getBarLayout(task);
           
           return (
             <div key={task.id} className="flex border-b border-gray-100 hover:bg-gray-50 group">
               {/* Task Title (Sticky Left) */}
-              <div className="w-64 min-w-64 border-r border-gray-200 bg-white group-hover:bg-gray-50 flex items-center justify-between px-4 py-3 sticky left-0 z-20 shadow-[2px_0_5px_rgba(0,0,0,0.05)] transition-colors text-sm">
+              <div className="w-64 min-w-[256px] border-r border-gray-200 bg-white group-hover:bg-gray-50 flex items-center justify-between px-4 py-3 sticky left-0 z-20 shadow-[2px_0_5px_rgba(0,0,0,0.05)] transition-colors text-sm">
                 <span className="font-medium text-gray-800 truncate pr-2" title={task.title}>{task.title}</span>
                 {task.viewingUsers && task.viewingUsers.length > 0 && <AvatarGroup users={task.viewingUsers} maxCount={1} />}
               </div>
               
               {/* Timeline Grid (Relative container for bars) */}
-              <div className="relative flex">
-                <div style={{ width: `${days.length * 64}px` }} className="pointer-events-none border-b border-transparent">
+              <div className="relative flex" style={{ width: `${days.length * 64}px` }}>
+                <div className="pointer-events-none border-b border-transparent w-full h-full absolute inset-0">
                    {/* Ghost grid lines could be generated here, but left out for performance. we rely on bar offsets. */}
                 </div>
                 
                 {/* Task Bar */}
                 <div 
-                  className={`absolute top-2 bottom-2 rounded px-2 py-1 text-xs text-white font-medium border shadow-sm flex items-center overflow-hidden cursor-default transition-transform hover:scale-[1.02] ${getPriorityColor(task.priority)}`}
+                  className={`absolute top-2 bottom-2 rounded px-2 py-1 text-xs text-white font-medium border shadow-sm flex items-center overflow-hidden cursor-default transition-transform hover:scale-[1.02] ${getPriorityColor(task.priority)} animate-slide-right stagger-${(idx % 6) + 1}`}
                   style={{
                     left: layout.left,
                     width: `calc(${layout.width} - 8px)`, // small padding between bars
@@ -122,6 +125,7 @@ export const TimelineView: React.FC = () => {
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );

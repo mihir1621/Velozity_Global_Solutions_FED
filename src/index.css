@@ -49,3 +49,52 @@ body {
 .ghost {
   opacity: 0;
 }
+
+/* Custom Entry Animations */
+@keyframes slideUpFade {
+  0% { opacity: 0; translate: 0 20px; }
+  100% { opacity: 1; translate: 0 0; }
+}
+
+@keyframes slideRightFade {
+  0% { opacity: 0; translate: -20px 0; }
+  100% { opacity: 1; translate: 0 0; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; scale: 0.9; }
+  100% { opacity: 1; scale: 1; }
+}
+
+.animate-slide-up {
+  opacity: 0;
+  animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-right {
+  opacity: 0;
+  animation: slideRightFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-scale-in {
+  opacity: 0;
+  animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Stagger Utilities */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+.stagger-6 { animation-delay: 300ms; }

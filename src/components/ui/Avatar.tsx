@@ -17,7 +17,7 @@ export const Avatar: React.FC<AvatarProps> = ({ user, size = 'md', className = '
 
   return (
     <div 
-      className={`relative inline-flex items-center justify-center rounded-full text-white font-medium ring-2 ring-white cursor-pointer ${sizeClasses[size]} ${className}`}
+      className={`relative inline-flex items-center justify-center rounded-full text-white font-medium ring-2 ring-white cursor-pointer animate-scale-in transition-transform hover:scale-110 ${sizeClasses[size]} ${className}`}
       style={{ backgroundColor: user.avatarColor }}
       title={showTooltip ? user.name : undefined}
     >
